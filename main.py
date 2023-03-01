@@ -39,7 +39,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-data_file = open('salats.json', 'r')
+data_file = open('/home/ubuntu/salat_times_bot/salats.json', 'r')
 cities = json.load(data_file)
 data_file.close()
 earth_radius = 6371  # km
@@ -93,7 +93,7 @@ async def make_times(context: ContextTypes.DEFAULT_TYPE):
     for k, v in salats.items():
         pretty_salats += k + ": " + v + "\n"
 
-    await context.bot.send_message(chat_id, disable_notification=context.job.name == str(chat_id),
+    await context.bot.send_message(chat_id, disable_notification=context.job.name == str(chat_id), # no notification at midnight
                                    text="Closest city (" + "%.2f" % (context.job.data[0] * earth_radius) + " km): " +
                                         city['nom'] + "\n\nTimes for today, " + str(new_today) +
                                         ":\n\n" + pretty_salats + "\nWill notify on every salat for today.\n")
@@ -160,8 +160,8 @@ def main() -> None:
     """Run the bot."""
 
     # Create the Application and pass it your bot's token.
-    application = Application.builder().token("__REDACTED__").defaults(
-        Defaults(tzinfo=pytz.timezone('Africa/Casablanca'))).build()
+    application = Application.builder().token("GET_YOURS_FROM_BOTFATHER").defaults(
+        Defaults(tzinfo=pytz.timezone('Etc/GMT-1'))).build() # why ISO why
 
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler("start", start)],
