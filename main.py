@@ -93,7 +93,7 @@ async def make_times(context: ContextTypes.DEFAULT_TYPE):
     for k, v in salats.items():
         pretty_salats += k + ": " + v + "\n"
 
-    await context.bot.send_message(chat_id, disable_notification=context.bot.name == str(chat_id),
+    await context.bot.send_message(chat_id, disable_notification=context.job.name == str(chat_id),
                                    text="Closest city (" + "%.2f" % (context.job.data[0] * earth_radius) + " km): " +
                                         city['nom'] + "\n\nTimes for today, " + str(new_today) +
                                         ":\n\n" + pretty_salats + "\nWill notify on every salat for today.\n")
