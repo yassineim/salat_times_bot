@@ -56,9 +56,9 @@ LOCATION, = range(1)
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     await update.message.reply_text(
-        "Salam, please send any location to get prayer times/notifications. You may send a new location any time to update location, or use /stop to stop the bot, "
-        "in which case you may start again with /start.\nPlease note that we do not store your location as the "
-        "program runs entirely in memory.\nSource code available @ github.com/yassineim/salat_times_bot.")
+        "Salam, please send any location to get prayer times/notifications\\. You may send a new location any time to update location, or use /stop to stop the bot, "
+        "in which case you may start again with /start\\.\n\nPlease note that we do not store your location as the "
+        "program runs entirely in memory\\.\n\nSource code available @ github\\.com/yassineim/salat\\_times\\_bot\\.\n\n*Please share a location\\.*", parse_mode='MarkdownV2')
     return LOCATION
 
 
