@@ -50,6 +50,9 @@ weird_cities = [[
 ] for city in cities]
 
 bt = BallTree(weird_cities, metric='haversine')
+morocco_timezone = pytz.timezone('Africa/Casablanca')
+utc_plus_one = pytz.timezone('Etc/GMT-1')
+fmt = '%H:%M (%Z)'
 
 LOCATION, = range(1)
 
@@ -71,7 +74,7 @@ async def location(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     context.job_queue.run_once(make_times, 0, data=[distances[0][0], indices[0][0]], chat_id=chat_id)
     remove_job_if_exists(str(chat_id), context)
-    context.job_queue.run_daily(make_times, time=datetime.time(hour=0, minute=5), data=[distances[0][0], indices[0][0]],
+    context.job_queue.run_daily(make_times, time=datetime.time(hour=2, minute=5), data=[distances[0][0], indices[0][0]],
                                 chat_id=chat_id, name=str(chat_id))
 
 
@@ -89,14 +92,6 @@ async def make_times(context: ContextTypes.DEFAULT_TYPE):
     month = next(month for month in city['months'] if month['month'] == new_month)
     day = next(day for day in month['days'] if day['day'] == new_day)
     salats = day['salats'][0]
-    pretty_salats = ""
-    for k, v in salats.items():
-        pretty_salats += k + ": " + v + "\n"
-
-    await context.bot.send_message(chat_id, disable_notification=context.job.name == str(chat_id), # no notification at midnight
-                                   text="Closest city (" + "%.2f" % (context.job.data[0] * earth_radius) + " km): " +
-                                        city['nom'] + "\n\nTimes for today, " + str(new_today) +
-                                        ":\n\n" + pretty_salats + "\nWill notify on every salat for today.\n")
 
     remove_job_if_exists(str(chat_id) + "_fajr", context)
     remove_job_if_exists(str(chat_id) + "_dhuhr", context)
@@ -104,22 +99,34 @@ async def make_times(context: ContextTypes.DEFAULT_TYPE):
     remove_job_if_exists(str(chat_id) + "_maghrib", context)
     remove_job_if_exists(str(chat_id) + "_ishae", context)
 
-    fajr_time = datetime.datetime.combine(new_today, datetime.datetime.strptime(salats['Fajr'], "%H:%M").time())
-    dhuhr_time = datetime.datetime.combine(new_today, datetime.datetime.strptime(salats['Dhuhr'], "%H:%M").time())
-    asr_time = datetime.datetime.combine(new_today, datetime.datetime.strptime(salats['Asr'], "%H:%M").time())
-    maghrib_time = datetime.datetime.combine(new_today, datetime.datetime.strptime(salats['Maghrib'], "%H:%M").time())
-    ishae_time = datetime.datetime.combine(new_today, datetime.datetime.strptime(salats['Ishae'], "%H:%M").time())
+    fajr_time = utc_plus_one.localize(datetime.datetime.combine(new_today, datetime.datetime.strptime(salats['Fajr'], "%H:%M").time())).astimezone(morocco_timezone) 
+    dhuhr_time = utc_plus_one.localize(datetime.datetime.combine(new_today, datetime.datetime.strptime(salats['Dhuhr'], "%H:%M").time())).astimezone(morocco_timezone) 
+    asr_time = utc_plus_one.localize(datetime.datetime.combine(new_today, datetime.datetime.strptime(salats['Asr'], "%H:%M").time())).astimezone(morocco_timezone) 
+    maghrib_time = utc_plus_one.localize(datetime.datetime.combine(new_today, datetime.datetime.strptime(salats['Maghrib'], "%H:%M").time())).astimezone(morocco_timezone) 
+    ishae_time = utc_plus_one.localize(datetime.datetime.combine(new_today, datetime.datetime.strptime(salats['Ishae'], "%H:%M").time())).astimezone(morocco_timezone) 
+
+    pretty_salats = ""
+    pretty_salats += "Fajr" + ": " + fajr_time.strftime(fmt) + "\n"
+    pretty_salats += "Dhuhr" + ": " + dhuhr_time.strftime(fmt) + "\n"
+    pretty_salats += "Asr" + ": " + asr_time.strftime(fmt) + "\n"
+    pretty_salats += "Maghrib" + ": " + maghrib_time.strftime(fmt) + "\n"
+    pretty_salats += "Ishae" + ": " + ishae_time.strftime(fmt) + "\n"
+
+    await context.bot.send_message(chat_id, disable_notification=context.job.name == str(chat_id), # no notification at 2AM because people ought to be sleeping
+                                   text="Closest city (" + "%.2f" % (context.job.data[0] * earth_radius) + " km): " +
+                                        city['nom'] + "\n\nTimes for today, " + str(new_today) +
+                                        ":\n\n" + pretty_salats + "\nWill notify on every salat for today.\n")
 
     context.job_queue.run_once(alarm, fajr_time, chat_id=chat_id, name=str(chat_id) + "_fajr",
-                               data="Fajr (" + str(fajr_time) + ")")
+                               data="Fajr (" + fajr_time.strftime(fmt) + ")")
     context.job_queue.run_once(alarm, dhuhr_time, chat_id=chat_id, name=str(chat_id) + "_dhuhr",
-                               data="Dhuhr (" + str(dhuhr_time) + ")")
+                               data="Dhuhr (" + dhuhr_time.strftime(fmt) + ")")
     context.job_queue.run_once(alarm, asr_time, chat_id=chat_id, name=str(chat_id) + "_asr",
-                               data="Asr (" + str(asr_time) + ")")
+                               data="Asr (" + asr_time.strftime(fmt) + ")")
     context.job_queue.run_once(alarm, maghrib_time, chat_id=chat_id, name=str(chat_id) + "_maghrib",
-                               data="Maghrib (" + str(maghrib_time) + ")")
+                               data="Maghrib (" + maghrib_time.strftime(fmt) + ")")
     context.job_queue.run_once(alarm, ishae_time, chat_id=chat_id, name=str(chat_id) + "_ishae",
-                               data="Ishae (" + str(ishae_time) + ")")
+                               data="Ishae (" + ishae_time.strftime(fmt) + ")")
 
 
 async def alarm(context: ContextTypes.DEFAULT_TYPE) -> None:
