@@ -98,11 +98,11 @@ async def make_times(context: ContextTypes.DEFAULT_TYPE):
                                         city['nom'] + "\n\nTimes for today, " + str(new_today) +
                                         ":\n\n" + pretty_salats + "\nWill notify on every salat for today.\n")
 
-    remove_job_if_exists(str(chat_id) + "fajr", context)
-    remove_job_if_exists(str(chat_id) + "dhuhr", context)
-    remove_job_if_exists(str(chat_id) + "asr", context)
-    remove_job_if_exists(str(chat_id) + "maghrib", context)
-    remove_job_if_exists(str(chat_id) + "ishae", context)
+    remove_job_if_exists(str(chat_id) + "_fajr", context)
+    remove_job_if_exists(str(chat_id) + "_dhuhr", context)
+    remove_job_if_exists(str(chat_id) + "_asr", context)
+    remove_job_if_exists(str(chat_id) + "_maghrib", context)
+    remove_job_if_exists(str(chat_id) + "_ishae", context)
 
     fajr_time = datetime.datetime.combine(new_today, datetime.datetime.strptime(salats['Fajr'], "%H:%M").time())
     dhuhr_time = datetime.datetime.combine(new_today, datetime.datetime.strptime(salats['Dhuhr'], "%H:%M").time())
