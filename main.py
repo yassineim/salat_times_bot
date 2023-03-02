@@ -161,7 +161,7 @@ def main() -> None:
 
     # Create the Application and pass it your bot's token.
     application = Application.builder().token("GET_YOURS_FROM_BOTFATHER").defaults(
-        Defaults(tzinfo=pytz.timezone('Etc/GMT-1'))).build() # why ISO why
+        Defaults(tzinfo=pytz.timezone('Etc/GMT-1'))).build() # it is necessary to configure your host system as UTC+1 as well (which means 'Etc/GMT-1' (?!)), even for Ramadan, trust me
 
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler("start", start)],
