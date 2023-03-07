@@ -39,7 +39,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-data_file = open('/home/ubuntu/salat_times_bot/salats.json', 'r')
+data_file = open('/home/opc/salat_times_bot/salats.json', 'r')
 cities = json.load(data_file)
 data_file.close()
 earth_radius = 6371  # km
@@ -52,7 +52,7 @@ weird_cities = [[
 bt = BallTree(weird_cities, metric='haversine')
 morocco_timezone = pytz.timezone('Africa/Casablanca')
 utc_plus_one = pytz.timezone('Etc/GMT-1')
-fmt = '%H:%M (%Z)'
+fmt = '%H:%M (GMT%Z)'
 
 LOCATION, = range(1)
 
@@ -61,7 +61,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     await update.message.reply_text(
         "Salam, please send any location to get prayer times/notifications\\. You may send a new location any time to update location, or use /stop to stop the bot, "
         "in which case you may start again with /start\\.\n\nPlease note that we do not store your location as the "
-        "program runs entirely in memory\\.\n\nSource code available @ github\\.com/yassineim/salat\\_times\\_bot\\.\n\n*Please share a location\\.*", parse_mode='MarkdownV2')
+        "program runs entirely in memory\\.\n\n*Please share a location\\.*", parse_mode='MarkdownV2')
     return LOCATION
 
 
@@ -118,15 +118,15 @@ async def make_times(context: ContextTypes.DEFAULT_TYPE):
                                         ":\n\n" + pretty_salats + "\nWill notify on every salat for today.\n")
 
     context.job_queue.run_once(alarm, fajr_time, chat_id=chat_id, name=str(chat_id) + "_fajr",
-                               data="Fajr (" + fajr_time.strftime(fmt) + ")")
+                               data="Fajr " + fajr_time.strftime(fmt))
     context.job_queue.run_once(alarm, dhuhr_time, chat_id=chat_id, name=str(chat_id) + "_dhuhr",
-                               data="Dhuhr (" + dhuhr_time.strftime(fmt) + ")")
+                               data="Dhuhr " + dhuhr_time.strftime(fmt))
     context.job_queue.run_once(alarm, asr_time, chat_id=chat_id, name=str(chat_id) + "_asr",
-                               data="Asr (" + asr_time.strftime(fmt) + ")")
+                               data="Asr " + asr_time.strftime(fmt))
     context.job_queue.run_once(alarm, maghrib_time, chat_id=chat_id, name=str(chat_id) + "_maghrib",
-                               data="Maghrib (" + maghrib_time.strftime(fmt) + ")")
+                               data="Maghrib " + maghrib_time.strftime(fmt))
     context.job_queue.run_once(alarm, ishae_time, chat_id=chat_id, name=str(chat_id) + "_ishae",
-                               data="Ishae (" + ishae_time.strftime(fmt) + ")")
+                               data="Ishae " + ishae_time.strftime(fmt))
 
 
 async def alarm(context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -167,8 +167,8 @@ def main() -> None:
     """Run the bot."""
 
     # Create the Application and pass it your bot's token.
-    application = Application.builder().token("GET_YOURS_FROM_BOTFATHER").defaults(
-        Defaults(tzinfo=pytz.timezone('Etc/GMT-1'))).build() # it is necessary to configure your host system as UTC+1 as well (which means 'Etc/GMT-1' (?!)), even for Ramadan, trust me
+    application = Application.builder().token("REDACTED").defaults(
+        Defaults(tzinfo=pytz.timezone('Etc/GMT-1'))).build()
 
     conv_handler = ConversationHandler(
         entry_points=[CommandHandler("start", start)],
