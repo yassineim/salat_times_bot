@@ -129,7 +129,7 @@ async def make_times(context: ContextTypes.DEFAULT_TYPE):
                                data='Ishae ' + ishae_time.strftime(fmt))
     
     await context.bot.send_message(chat_id, text='You may use this notification tone if you want, instructions @ https://telegram.org/blog/notifications-bots#custom-notification-sounds.', disable_web_page_preview=True)
-    await context.bot.send_audio(chat_id, audio='CQACAgQAAxkDAAICs2QKGEtlB8NAg2dWUhZ0GfTVPXQPAAIoEAACHZBQUEJLfWdX3FYbLwQ')
+    await context.bot.send_audio(chat_id, audio='CQACAgQAAxkDAAIC8WQLVvGyPoJ-UmMH19Sby1hGsuGnAAIWEAACGvFgUIBgLdGUMgO5LwQ')
 
 
 async def alarm(context: ContextTypes.DEFAULT_TYPE) -> None:
